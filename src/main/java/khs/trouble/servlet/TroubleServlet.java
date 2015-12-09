@@ -18,14 +18,17 @@ package khs.trouble.servlet;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import khs.trouble.codeblock.ExceptionBlock;
+import khs.trouble.codeblock.KillBlock;
+import khs.trouble.codeblock.LoadBlock;
+import khs.trouble.codeblock.MemoryBlock;
 
 public class TroubleServlet extends HttpServlet {
 
@@ -44,6 +47,17 @@ public class TroubleServlet extends HttpServlet {
 		String requestToken = request.getHeader("token");
 
 		String token = getServletConfig().getInitParameter("token");
+		// optional overrides
+		String killBlock = getServletConfig().getInitParameter("kill");
+		String memoryBlock = getServletConfig().getInitParameter("memory");
+		String exceptionBlock = getServletConfig()
+				.getInitParameter("exception");
+		String loadBlock = getServletConfig().getInitParameter("load");
+		long timeout = 0;
+		String stimeout = request.getHeader("timeout");
+		if (stimeout != null)  {
+			timeout = new Long(stimeout);
+		}
 
 		// Validate token access
 		if (requestToken == null || token == null
@@ -55,147 +69,55 @@ public class TroubleServlet extends HttpServlet {
 		String uri = request.getRequestURI();
 		String[] parts = uri.split("/");
 		String action = parts[2];
+		CodeBlock code = null;
+
+		LOG.info("Executing Trouble Action: " + action);
+
 		if (action.toUpperCase().equals(KILL)) {
 
-			Runnable run = new Runnable() {
+			if (killBlock == null) {
+				code = new KillBlock(timeout);
+			} else {
+				code = create(killBlock);
+			}
 
-				public void run() {
-					try {
-						Thread.sleep(4000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.exit(-1);
-				}
-
-			};
-
-			Thread thread = new Thread(run);
-			thread.start();
 		}
 
 		if (action.toUpperCase().equals(LOAD)) {
 
-			long timeout = new Long(request.getHeader("timeout"));
-			long sleep = 1;
-			String msg = timeout == 0 ? "NEVER" : "" + (timeout / 60000)
-					+ " minute(s)";
-			LOG.info("STARTING Trouble Maker Load thread, will timeout in "
-					+ msg);
-
-			long start = System.currentTimeMillis();
-			// block for specified period of time (milliseconds)
-			while (true) {
-				// log.info("Thread "+t+" executing...");
-				if (System.currentTimeMillis() - start >= timeout
-						&& timeout > 0) {
-					break;
-				}
-
+			if (loadBlock == null) {
+				code = new LoadBlock(timeout);
+			} else {
+				code = create(loadBlock);
 			}
 
-			LOG.info("DONE Trouble Maker Load thread");
-
-			// ThreadBlocker blocker = new ThreadBlocker(sleep,timeout);
-			// blocker.block(100);
+			this.spawnCodeBlockThread(code);
 
 		}
 
 		if (action.toUpperCase().equals(EXCEPTION)) {
 
-			Runnable run = new Runnable() {
-
-				public void run() {
-					try {
-						Thread.sleep(1000);
-
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					LOG.info("throwing Trouble Maker runtime exception");
-
-					throw new RuntimeException(
-							"Trouble Maker Runtime Exception");
-
-				}
-
-			};
-
-			Thread thread = new Thread(run);
-			thread.setName("TroubleMaker");
-			thread.start();
+			if (exceptionBlock == null) {
+				code = new ExceptionBlock(timeout);
+			} else {
+				code = create(exceptionBlock);
+			}
 
 		}
 
 		if (action.toUpperCase().equals(MEMORY)) {
 
-			final long timeout = new Long(request.getHeader("timeout"));
-			Runnable run = new Runnable() {
+			if (memoryBlock == null) {
+				code = new MemoryBlock(timeout);
+			} else {
+				code = create(memoryBlock);
+			}
 
-				public void run() {
+		}
 
-					long memory = Runtime.getRuntime().freeMemory();
-					LOG.info("Eating Memory Started at: " + memory);
+		if (code != null) {
 
-					List<char[]> buffer = new ArrayList<char[]>();
-
-					while (true) {
-
-						try {
-							char[] c = new char[Integer.MAX_VALUE / 4];
-							for (int i = 0; i < Integer.MAX_VALUE / 4; i++) {
-								c[i] = (char) i;
-
-								if (i % 1000000 == 0) {
-									LOG.info("Memory Eaten -"
-											+ (Runtime.getRuntime()
-													.freeMemory() - memory));
-								}
-								buffer.add(c);
-							}
-						} catch (OutOfMemoryError e) {
-							long start = System.currentTimeMillis();
-							String msg = timeout == 0 ? "NEVER" : ""
-									+ (timeout / 60000) + " minute(s)";
-							LOG.info("Heap MEMORY limit reached...will stay in low memory condition for "
-									+ msg);
-							while (true) {
-
-								try {
-
-									long sleep = 1000;
-									if (System.currentTimeMillis() - start >= timeout
-											&& timeout > 0) {
-										buffer = null;
-										break;
-									}
-
-									Thread.sleep(sleep);
-								} catch (InterruptedException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-
-							}
-							buffer = null;
-							LOG.info("Memory Consumption stopped");
-
-							Thread.currentThread().stop();
-
-						}
-
-					}
-
-				}
-
-			};
-
-			Thread thread = new Thread(run);
-			thread.setName("TroubleMaker");
-			thread.start();
-
+			this.spawnCodeBlockThread(code);
 		}
 
 		Writer writer = response.getWriter();
@@ -203,14 +125,16 @@ public class TroubleServlet extends HttpServlet {
 
 	}
 
-	public void spawnBlockThread(final long sleep) {
+	public void spawnCodeBlockThread(final CodeBlock block) {
 
 		Runnable run = new Runnable() {
 
 			public void run() {
 				try {
 
-					Thread.sleep(sleep);
+					block.eval();
+
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -222,6 +146,37 @@ public class TroubleServlet extends HttpServlet {
 
 		Thread thread = new Thread(run);
 		thread.start();
+	}
+
+	private CodeBlock create(String clazzName) {
+
+		CodeBlock codeBlock = null;
+		try {
+			codeBlock = (CodeBlock) Class.forName(clazzName).newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException(
+					"ERROR Creating Trouble Maker Class "
+							+ clazzName
+							+ " Make sure it implements khs.trouble.sevlet.CodeBlock and is in classpath...");
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(
+					"ERROR Creating Trouble Maker Class "
+							+ clazzName
+							+ " Make sure it extends from khs.trouble.sevlet.BaseCodeBlock and is in classpath...");
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(
+					"ERROR Creating Trouble Maker Class "
+							+ clazzName
+							+ " Make sure it extends from khs.trouble.sevlet.BaseCodeBlock and is in classpath...");
+		} catch (ClassCastException e) {
+			throw new RuntimeException(
+					"ERROR Creating Trouble Maker Class "
+							+ clazzName
+							+ " Make sure it extends from khs.trouble.sevlet.BaseCodeBlock and is in classpath...");
+		}
+
+		return codeBlock;
+
 	}
 
 }
