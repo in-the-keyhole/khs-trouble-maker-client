@@ -44,8 +44,8 @@ By Default trouble maker actions will be performed by calling the following URI'
 `http://<server>/trouble/exception` - Throws an exception to validate exception handling behavior of a service
 
 
-Defining Custom Actions 
------------------------
+Defining Custom Actions Code Blocks
+-----------------------------------
 If you want to apply your own trouble actions and override the supplied defaults. You can create a class that extends from this supplied abstract class, shown below. 
 
 	public class MyKillCodeBlock extends BaseCodeBlokc{	
@@ -75,12 +75,12 @@ Then you will need to register the action as a parameter for the trouble servlet
 	</servlet>
 	...
 
-#####Here's the kill operation names you can use to override 
+Here's the kill operation names you can use to override, through servlet init parameters... 
 
-*kill
-*load
-*memory
-*exception 
+* kill
+* load
+* memory
+* exception 
 
 
 
