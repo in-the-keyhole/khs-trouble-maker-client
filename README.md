@@ -33,7 +33,7 @@ Register this Java Servlet in your web.xml or config:
 
 Actions
 -------	
-By default, Trouble Maker actions will be performed by calling the following URIs, if a matching access token is defined in the request header. The Trouble Maker (DASHBOARD)[https://github.com/in-the-keyhole/khs-trouble-maker] will invoke these URIs. 
+By default, Trouble Maker actions will be performed by calling the following URIs, if a matching access token is defined in the request header. The Trouble Maker [dashboard](https://github.com/in-the-keyhole/khs-trouble-maker) will invoke these URIs. 
 
 `http://<server>/trouble/kill` - Kills the service with a System.exit() command. 
 
