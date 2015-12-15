@@ -4,7 +4,7 @@ Servlet that is registered with clients of the [Trouble Maker](https://github.co
 
 Installation
 ------------
-Add this dependency to your POM.XML
+Add this dependency to your POM.XML:
 
 	<dependency>
 		<groupId>com.keyholesoftware</groupId>
@@ -13,7 +13,7 @@ Add this dependency to your POM.XML
 	</dependency>	
 
 
-Register this Java Servlet in your web.xml or config
+Register this Java Servlet in your web.xml or config:
 
 
 	<servlet>
@@ -33,20 +33,20 @@ Register this Java Servlet in your web.xml or config
 
 Actions
 -------	
-By Default trouble maker actions will be performed by calling the following URI's, if a matching access token is defined in the request header. The trouble maker (DASHBOARD)[https://github.com/in-the-keyhole/khs-trouble-maker] will invoke these URI's. 
+By default, Trouble Maker actions will be performed by calling the following URIs, if a matching access token is defined in the request header. The Trouble Maker (DASHBOARD)[https://github.com/in-the-keyhole/khs-trouble-maker] will invoke these URIs. 
 
 `http://<server>/trouble/kill` - Kills the service with a System.exit() command. 
 
-`http://<server>/trouble/memory` - Executes a thread that fills up heap memory and keeps it there for the timeout period
+`http://<server>/trouble/memory` - Executes a thread that fills up heap memory and keeps it there for the timeout period.
 
-`http://<server>/trouble/load` - Spawns specified number of threads the block for the the timeout period
+`http://<server>/trouble/load` - Spawns specified number of threads the block for the the timeout period.
 
-`http://<server>/trouble/exception` - Throws an exception to validate exception handling behavior of a service
+`http://<server>/trouble/exception` - Throws an exception to validate exception handling behavior of a service.
 
 
 Defining Custom Actions Code Blocks
 -----------------------------------
-If you want to apply your own trouble actions and override the supplied defaults. You can create a class that extends from this supplied abstract class, shown below. 
+If you want to apply your own trouble actions and override the supplied defaults, yYou can create a class that extends from this supplied abstract class, as shown below. 
 
 	public class MyKillCodeBlock extends BaseCodeBlokc{	
 		public KillBlock(long timeout) {
@@ -59,7 +59,7 @@ If you want to apply your own trouble actions and override the supplied defaults
 		}	
 	}
 
-Then you will need to register the action as a parameter for the trouble servlet when defining it in the web.xml. The example below shows how a custom load action is registered. 
+Then you will need to register the action as a parameter for the trouble servlet when defining it in the web.xml. The example below shows how a custom load action is registered:
  
     ...
 	<servlet>
@@ -75,30 +75,8 @@ Then you will need to register the action as a parameter for the trouble servlet
 	</servlet>
 	...
 
-Here's the kill operation names you can use to override, through servlet init parameters... 
-
+Here's the kill operation names you can use to override, through servlet init parameters:
 * kill
 * load
 * memory
 * exception 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
