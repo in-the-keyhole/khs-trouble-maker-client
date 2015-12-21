@@ -30,21 +30,6 @@ Register this Java Servlet in your web.xml or config:
 		    <url-pattern>/trouble/*</url-pattern>
 	</servlet-mapping>
 	
-or if using Spring Boot, add this Configuration
-
-	@Configuration
-	public class ServletRegistration extends SpringBootServletInitializer {
-
-		@Bean
-		public ServletRegistrationBean dispatcherServletRegistration() {
-			ServletRegistrationBean registration = new ServletRegistrationBean(new TroubleServlet(), "/trouble/*");
-			Map<String, String> params = new HashMap<String, String>();
-			params.put("token", "abc123");
-			registration.setInitParameters(params);
-			return registration;
-		}
-	}
-
 Actions
 -------	
 By default, Trouble Maker actions will be performed by calling the following URIs, if a matching access token is defined in the request header. The Trouble Maker [dashboard](https://github.com/in-the-keyhole/khs-trouble-maker) will invoke these URIs. 
