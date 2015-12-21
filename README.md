@@ -32,18 +32,18 @@ Register this Java Servlet in your web.xml or config:
 	
 or if using Spring Boot, add this Configuration
 
-@Configuration
-public class ServletRegistration extends SpringBootServletInitializer {
+	@Configuration
+	public class ServletRegistration extends SpringBootServletInitializer {
 
-	@Bean
-	public ServletRegistrationBean dispatcherServletRegistration() {
-		ServletRegistrationBean registration = new ServletRegistrationBean(new TroubleServlet(), "/trouble/*");
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("token", "abc123");
-		registration.setInitParameters(params);
-		return registration;
+		@Bean
+		public ServletRegistrationBean dispatcherServletRegistration() {
+			ServletRegistrationBean registration = new ServletRegistrationBean(new TroubleServlet(), "/trouble/*");
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("token", "abc123");
+			registration.setInitParameters(params);
+			return registration;
+		}
 	}
-}
 
 Actions
 -------	
