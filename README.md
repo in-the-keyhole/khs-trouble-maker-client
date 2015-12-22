@@ -9,7 +9,7 @@ Add this dependency to your POM.XML:
 	<dependency>
 		<groupId>com.keyholesoftware</groupId>
 		<artifactId>khs-trouble-maker-client</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</dependency>	
 
 
