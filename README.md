@@ -30,7 +30,6 @@ Register this Java Servlet in your web.xml or config:
 		    <url-pattern>/trouble/*</url-pattern>
 	</servlet-mapping>
 	
-
 Actions
 -------	
 By default, Trouble Maker actions will be performed by calling the following URIs, if a matching access token is defined in the request header. The Trouble Maker [dashboard](https://github.com/in-the-keyhole/khs-trouble-maker) will invoke these URIs. 
