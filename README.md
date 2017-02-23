@@ -2,6 +2,13 @@
 
 Servlet that is registered with clients of the [Trouble Maker](https://github.com/in-the-keyhole/khs-trouble-maker) framework used to randomly produce server trouble issues.
 
+##Quick Links
+[Trouble Maker](https://github.com/in-the-keyhole/khs-trouble-maker/)
+
+[Trouble Maker Spring Boot Starter](https://github.com/in-the-keyhole/khs-spring-boot-troublemaker-starter)
+
+[Trouble Maker Website](https://keyholelabs.com/trouble-maker/)
+
 Installation
 ------------
 Add this dependency to your POM.XML:
